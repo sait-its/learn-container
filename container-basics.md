@@ -120,21 +120,21 @@ Installing Docker Engine directly on Linux is often better for learners compared
 3. **Access to Native Linux Features**: Docker on Linux can leverage native kernel features directly, providing a more seamless and integrated experience.
 4. **Community and Support**: The Docker community and many tutorials are heavily Linux-focused. Learners using Linux will find it easier to follow along with these resources and seek help when needed.
 
-The demos in this document run on a Ubuntu 24.04 LTS VM.
+The demos in this document run on a Ubuntu 24.04.4 LTS VM.
 
 ```
 ubuntu@docker-host:~$ lsb_release  -a
 No LSB modules are available.
 Distributor ID:	Ubuntu
-Description:	Ubuntu 24.04 LTS
+Description:	Ubuntu 24.04.4 LTS
 Release:	24.04
 Codename:	noble
 
 ubuntu@docker-host:~$ cat /etc/os-release
-PRETTY_NAME="Ubuntu 24.04 LTS"
+PRETTY_NAME="Ubuntu 24.04.4 LTS"
 NAME="Ubuntu"
 VERSION_ID="24.04"
-VERSION="24.04 LTS (Noble Numbat)"
+VERSION="24.04.4 LTS (Noble Numbat)"
 VERSION_CODENAME=noble
 ID=ubuntu
 ID_LIKE=debian
@@ -149,15 +149,15 @@ LOGO=ubuntu-logo
 ```
 ubuntu@docker-host:~$ docker info
 Client: Docker Engine - Community
- Version:    26.1.4
+ Version:    29.3.0
  Context:    default
  Debug Mode: false
  Plugins:
   buildx: Docker Buildx (Docker Inc.)
-    Version:  v0.14.1
+    Version:  v0.31.1
     Path:     /usr/libexec/docker/cli-plugins/docker-buildx
   compose: Docker Compose (Docker Inc.)
-    Version:  v2.27.1
+    Version:  v5.1.0
     Path:     /usr/libexec/docker/cli-plugins/docker-compose
 ......
 ```
@@ -184,23 +184,24 @@ The output from this command is the full container ID.
 ```
 Unable to find image 'docker/welcome-to-docker:latest' locally
 latest: Pulling from docker/welcome-to-docker
-96526aa774ef: Pull complete
-740091335c74: Pull complete
-da9c2e764c5b: Pull complete
-ade17ad21ef4: Pull complete
-4e6f462c8a69: Pull complete
-1324d9977cd2: Pull complete
-1b9b96da2c74: Pull complete
-5d329b1e101a: Pull complete
-Digest: sha256:eedaff45e3c78538087bdd9dc7afafac7e110061bbdd836af4104b10f10ab693
+9745203f5d34: Pull complete
+958a74d6a238: Pull complete
+9824c27679d3: Pull complete
+828fa206d77b: Pull complete
+c1d2dc189e38: Pull complete
+a5585638209e: Pull complete
+fd372c3c84a2: Pull complete
+bdaad27fd04a: Pull complete
+1babe895ddff: Download complete
+Digest: sha256:c4d56c24da4f009ecf8352146b43497fe78953edb4c679b841732beb97e588b0
 Status: Downloaded newer image for docker/welcome-to-docker:latest
-ea219fee063f826773e85ade36ccd3e4ac654aa4b5de2ed3b42374fe745f8886
+3f89cf09bbb69fec7d7c6933f0af4b4f86a7d94274ead7052b4b7a71123eb181
 ```
 Run `docker ps` to verify the container ID.
 ```
 ubuntu@docker-host:~$ docker ps
-CONTAINER ID   IMAGE                      COMMAND                  CREATED         STATUS         PORTS                  NAMES
-ea219fee063f   docker/welcome-to-docker   "/docker-entrypoint.…"   8 seconds ago   Up 8 seconds   0.0.0.0:8080->80/tcp   elated_chatterjee
+CONTAINER ID   IMAGE                      COMMAND                  CREATED          STATUS          PORTS                                     NAMES
+3f89cf09bbb6   docker/welcome-to-docker   "/docker-entrypoint.…"   24 seconds ago   Up 23 seconds   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   boring_murdock
 ```
 > [!NOTE]  
 > `docker run` is an alias of `docker container run`. https://docs.docker.com/reference/cli/docker/container/run/
@@ -211,7 +212,7 @@ Excerpt from https://docs.docker.com/guides/docker-concepts/the-basics/what-is-a
 
 > A container image is a standardized package that includes all of the files, binaries, libraries, and configurations to run a container.
 
-Excerpt from https://docs.vmware.com/en/VMware-vSphere/8.0/vsphere-vm-administration/GUID-E9EAF7AC-1C08-441A-AB80-0BAA1EAF9F0A.html:
+Excerpt from https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/templates-in-content-libraries.html:
 
 > VM Templates are primary copies of virtual machines that you can use to deploy virtual machines that are customized and ready for use. Templates promote consistency throughout your vSphere environment. You can use the content library to store and manage templates of virtual machines and vApps.
 
@@ -224,37 +225,11 @@ Excerpt from https://docs.vmware.com/en/VMware-vSphere/8.0/vsphere-vm-administra
 
 Search for images using the [`docker search`](https://docs.docker.com/reference/cli/docker/search/) command:
 
-```
+```bash
 docker search nginx
 ```
 
-```
-NAME                               DESCRIPTION                                     STARS     OFFICIAL
-nginx                              Official build of Nginx.                        19963     [OK]
-unit                               Official build of NGINX Unit: Universal Web …   32        [OK]
-nginx/nginx-ingress                NGINX and  NGINX Plus Ingress Controllers fo…   92
-nginxinc/nginx-unprivileged        Unprivileged NGINX Dockerfiles                  152
-nginx/nginx-prometheus-exporter    NGINX Prometheus Exporter for NGINX and NGIN…   42
-nginxinc/nginx-s3-gateway          Authenticating and caching gateway based on …   6
-nginx/unit                         This repository is retired, use the Docker o…   63
-nginx/nginx-ingress-operator       NGINX Ingress Operator for NGINX and NGINX P…   2
-nginxinc/amplify-agent             NGINX Amplify Agent docker repository           1
-nginx/nginx-quic-qns               NGINX QUIC interop                              1
-nginxinc/ingress-demo              Ingress Demo                                    4
-nginxproxy/nginx-proxy             Automated nginx proxy for Docker containers …   139
-nginxproxy/acme-companion          Automated ACME SSL certificate generation fo…   134
-nginx/unit-preview                 Unit preview features                           0
-bitnami/nginx                      Bitnami container image for NGINX               189
-bitnami/nginx-ingress-controller   Bitnami container image for NGINX Ingress Co…   34
-nginxproxy/docker-gen              Generate files from docker container meta-da…   17
-bitnami/nginx-exporter             Bitnami container image for NGINX Exporter      5
-nginxinc/mra-fakes3                                                                0
-ubuntu/nginx                       Nginx, a high-performance reverse proxy & we…   114
-nginxinc/ngx-rust-tool                                                             0
-nginxinc/mra_python_base                                                           0
-rancher/nginx-ingress-controller                                                   13
-kasmweb/nginx                      An Nginx image based off nginx:alpine and in…   8
-```
+![docker-search-nginx](./container-basics.assets/docker-search-nginx.webp)
 
 Pull an image using the [`docker pull`](https://docs.docker.com/reference/cli/docker/image/pull/) command.
 
@@ -267,15 +242,16 @@ You will see output like the following:
 ```
 Using default tag: latest
 latest: Pulling from docker/welcome-to-docker
-96526aa774ef: Pull complete
-740091335c74: Pull complete
-da9c2e764c5b: Pull complete
-ade17ad21ef4: Pull complete
-4e6f462c8a69: Pull complete
-1324d9977cd2: Pull complete
-1b9b96da2c74: Pull complete
-5d329b1e101a: Pull complete
-Digest: sha256:eedaff45e3c78538087bdd9dc7afafac7e110061bbdd836af4104b10f10ab693
+9745203f5d34: Pull complete
+958a74d6a238: Pull complete
+a5585638209e: Pull complete
+fd372c3c84a2: Pull complete
+c1d2dc189e38: Pull complete
+828fa206d77b: Pull complete
+9824c27679d3: Pull complete
+bdaad27fd04a: Pull complete
+1babe895ddff: Download complete
+Digest: sha256:c4d56c24da4f009ecf8352146b43497fe78953edb4c679b841732beb97e588b0
 Status: Downloaded newer image for docker/welcome-to-docker:latest
 docker.io/docker/welcome-to-docker:latest
 ```
@@ -289,41 +265,23 @@ docker image ls
 ```
 
 ```
-REPOSITORY                 TAG       IMAGE ID       CREATED        SIZE
-docker/welcome-to-docker   latest    c1f619b6477e   7 months ago   18.6MB
+IMAGE                             ID             DISK USAGE   CONTENT SIZE   EXTRA
+docker/welcome-to-docker:latest   c4d56c24da4f       22.2MB         6.03MB
 ```
 
 List the image's layers using the [`docker image history`](https://docs.docker.com/reference/cli/docker/image/history/) command:
 
-```
+```bash
 docker image history docker/welcome-to-docker
 ```
 
-```
-IMAGE          CREATED        CREATED BY                                      SIZE      COMMENT
-c1f619b6477e   7 months ago   COPY /app/build /usr/share/nginx/html # buil…   1.6MB     buildkit.dockerfile.v0
-<missing>      8 months ago   /bin/sh -c #(nop)  CMD ["nginx" "-g" "daemon…   0B
-<missing>      8 months ago   /bin/sh -c #(nop)  STOPSIGNAL SIGQUIT           0B
-<missing>      8 months ago   /bin/sh -c #(nop)  EXPOSE 80                    0B
-<missing>      8 months ago   /bin/sh -c #(nop)  ENTRYPOINT ["/docker-entr…   0B
-<missing>      8 months ago   /bin/sh -c #(nop) COPY file:9e3b2b63db9f8fc7…   4.62kB
-<missing>      8 months ago   /bin/sh -c #(nop) COPY file:57846632accc8975…   3.02kB
-<missing>      8 months ago   /bin/sh -c #(nop) COPY file:3b1b9915b7dd898a…   298B
-<missing>      8 months ago   /bin/sh -c #(nop) COPY file:caec368f5a54f70a…   2.12kB
-<missing>      8 months ago   /bin/sh -c #(nop) COPY file:01e75c6dd0ce317d…   1.62kB
-<missing>      8 months ago   /bin/sh -c set -x     && addgroup -g 101 -S …   9.61MB
-<missing>      8 months ago   /bin/sh -c #(nop)  ENV PKG_RELEASE=1            0B
-<missing>      8 months ago   /bin/sh -c #(nop)  ENV NGINX_VERSION=1.25.3     0B
-<missing>      8 months ago   /bin/sh -c #(nop)  LABEL maintainer=NGINX Do…   0B
-<missing>      8 months ago   /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B
-<missing>      8 months ago   /bin/sh -c #(nop) ADD file:756183bba9c7f4593…   7.34MB
-```
+![docker-image-history](./container-basics.assets/docker-image-history.webp)
 
 This output shows you all of the layers, their sizes, and the command used to create the layer.
 
 ### What is a registry?
 
-Excerpt from https://docs.docker.com/guides/docker-concepts/the-basics/what-is-a-registry/:
+Excerpt from https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-registry/:
 > An image registry is a centralized location for storing and sharing your container images. It can be either public or private. Docker Hub is a public registry that anyone can use and is the default registry.
 > 
 > While Docker Hub is a popular option, there are many other available container registries available today, including Amazon Elastic Container Registry(ECR), Azure Container Registry (ACR), and Google Container Registry (GCR). You can even run your private registry on your local system or inside your organization. For example, Harbor, JFrog Artifactory, GitLab Container registry etc.
@@ -442,8 +400,10 @@ You will see output like the following:
 ```
 Unable to find image 'alpine:latest' locally
 latest: Pulling from library/alpine
-ec99f8b99825: Pull complete
-Digest: sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0
+589002ba0eae: Pull complete
+9e595aac14e0: Download complete
+caa817ad3aea: Download complete
+Digest: sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
 Status: Downloaded newer image for alpine:latest
 / #
 ```
@@ -454,8 +414,8 @@ Check the OS information inside the running container:
 / # cat /etc/os-release
 NAME="Alpine Linux"
 ID=alpine
-VERSION_ID=3.20.1
-PRETTY_NAME="Alpine Linux v3.20"
+VERSION_ID=3.23.3
+PRETTY_NAME="Alpine Linux v3.23"
 HOME_URL="https://alpinelinux.org/"
 BUG_REPORT_URL="https://gitlab.alpinelinux.org/alpine/aports/-/issues"
 ```
@@ -476,7 +436,7 @@ On the host, run `docker container ls` to list containers:
 # This command runs on the host
 docker container ls
 CONTAINER ID   IMAGE     COMMAND     CREATED          STATUS          PORTS     NAMES
-6c272c60442b   alpine    "/bin/sh"   19 minutes ago   Up 19 minutes             crazy_faraday
+fdfaa97024a6   alpine    "/bin/sh"   19 minutes ago   Up 19 minutes             crazy_faraday
 ```
 > [!NOTE]  
 > `crazy_faraday` is the random container name generated by Docker if no container name is specified in the `docker run` command. [moby/pkg/namesgenerator/names-generator.go at master · moby/moby (github.com)](https://github.com/moby/moby/blob/master/pkg/namesgenerator/names-generator.go)
@@ -497,8 +457,8 @@ On the host, run `docker ps` to list containers:
 # This command runs on the host
 docker ps
 CONTAINER ID   IMAGE     COMMAND     CREATED          STATUS          PORTS     NAMES
-5db5a74490d5   alpine    "/bin/sh"   7 seconds ago    Up 6 seconds              reverent_sutherland
-6c272c60442b   alpine    "/bin/sh"   26 minutes ago   Up 26 minutes             crazy_faraday
+fddaea23f104   alpine    "/bin/sh"   7 seconds ago    Up 6 seconds              reverent_sutherland
+fdfaa97024a6   alpine    "/bin/sh"   26 minutes ago   Up 26 minutes             crazy_faraday
 ```
 
 Create a new file inside `crazy_faraday` container:
@@ -528,19 +488,19 @@ Run `uname -a` on both containers and the host:
 ```
 # This command runs inside the crazy_faraday container
 / # uname -a
-Linux 5361e28bfc38 6.8.0-35-generic #35-Ubuntu SMP PREEMPT_DYNAMIC Mon May 20 15:51:52 UTC 2024 x86_64 Linux
+Linux fdfaa97024a6 6.8.0-106-generic #106-Ubuntu SMP PREEMPT_DYNAMIC Fri Mar  6 07:58:08 UTC 2026 x86_64 Linux
 ```
 
 ```
 # This command runs inside the reverent_sutherland container
 / # uname -a
-Linux 1d9204993126 6.8.0-35-generic #35-Ubuntu SMP PREEMPT_DYNAMIC Mon May 20 15:51:52 UTC 2024 x86_64 Linux
+Linux fddaea23f104 6.8.0-106-generic #106-Ubuntu SMP PREEMPT_DYNAMIC Fri Mar  6 07:58:08 UTC 2026 x86_64 Linux
 ```
 
 ```
 # This command runs on the host
 ubuntu@docker-host:~$ uname -a
-Linux docker-host 6.8.0-35-generic #35-Ubuntu SMP PREEMPT_DYNAMIC Mon May 20 15:51:52 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
+Linux docker-host 6.8.0-106-generic #106-Ubuntu SMP PREEMPT_DYNAMIC Fri Mar  6 07:58:08 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
 ```
 
 This demo proves that if you run multiple containers, they all share the same kernel, allowing you to run more applications on less infrastructure.
@@ -561,7 +521,7 @@ Run `exit` inside the `reverent_sutherland` container then run `docker ps` on th
 # This command runs on the host
 ubuntu@docker-host:~$ docker ps
 CONTAINER ID   IMAGE     COMMAND     CREATED          STATUS          PORTS     NAMES
-6c272c60442b   alpine    "/bin/sh"   40 minutes ago   Up 40 minutes             crazy_faraday
+fdfaa97024a6   alpine    "/bin/sh"   40 minutes ago   Up 40 minutes             crazy_faraday
 ```
 
 Run `ps aux | grep '/bin/sh'` on the host again to list container processes:
@@ -602,9 +562,9 @@ Show all containers (default shows just running).
 # This command runs on the host
 ubuntu@docker-host:~$ docker ps -a
 CONTAINER ID   IMAGE         COMMAND     CREATED             STATUS                         PORTS     NAMES
-5db5a74490d5   alpine        "/bin/sh"   25 minutes ago      Exited (0) 11 minutes ago                reverent_sutherland
-6c272c60442b   alpine        "/bin/sh"   51 minutes ago      Exited (137) 9 minutes ago               crazy_faraday
-b0a454d2a766   hello-world   "/hello"    About an hour ago   Exited (0) About an hour ago             charming_blackwell
+fddaea23f104   alpine        "/bin/sh"   25 minutes ago      Exited (0) 11 minutes ago                reverent_sutherland
+fdfaa97024a6   alpine        "/bin/sh"   51 minutes ago      Exited (137) 9 minutes ago               crazy_faraday
+075b2ceea6a5   hello-world   "/hello"    About an hour ago   Exited (0) About an hour ago             charming_blackwell
 ```
 
 #### `docker start [OPTIONS] CONTAINER`
@@ -613,11 +573,11 @@ Start one or more stopped containers.
 
 ```
 # This command runs on the host
-ubuntu@docker-host:~$ docker container start 5db5a74490d5
-5db5a74490d5
+ubuntu@docker-host:~$ docker container start fddaea23f104
+fddaea23f104
 ubuntu@docker-host:~$ docker ps
 CONTAINER ID   IMAGE     COMMAND     CREATED          STATUS         PORTS     NAMES
-5db5a74490d5   alpine    "/bin/sh"   26 minutes ago   Up 1 second              reverent_sutherland
+fddaea23f104   alpine    "/bin/sh"   26 minutes ago   Up 1 second              reverent_sutherland
 ```
 
 #### `docker container attach`
@@ -626,7 +586,7 @@ Attach local standard input, output, and error streams to a running container.
 
 ```
 # This command runs on the host
-ubuntu@docker-host:~$ docker attach 5db5a74490d5
+ubuntu@docker-host:~$ docker attach fddaea23f104
 / #
 ```
 
@@ -639,8 +599,8 @@ Stop one or more running containers. The main process inside the container will 
 
 ```
 # This command runs on the host
-ubuntu@docker-host:~$ docker stop 5db5a74490d5
-5db5a74490d5
+ubuntu@docker-host:~$ docker stop fddaea23f104
+fddaea23f104
 ```
 
 > [!NOTE]  
@@ -654,8 +614,8 @@ Kill one or more running containers. The main process inside the container is se
 
 ```
 # This command runs on the host
-ubuntu@docker-host:~$ docker kill 5db5a74490d5
-5db5a74490d5
+ubuntu@docker-host:~$ docker kill fddaea23f104
+fddaea23f104
 ```
 
 > [!NOTE]  
@@ -679,18 +639,18 @@ Remove one or more containers.
 # Before docker rm
 ubuntu@docker-host:~$ docker ps -a
 CONTAINER ID   IMAGE         COMMAND     CREATED             STATUS                        PORTS     NAMES
-5db5a74490d5   alpine        "/bin/sh"   37 minutes ago      Exited (137) 2 minutes ago              reverent_sutherland
-6c272c60442b   alpine        "/bin/sh"   About an hour ago   Exited (137) 21 minutes ago             crazy_faraday
-b0a454d2a766   hello-world   "/hello"    2 hours ago         Exited (0) 8 minutes ago                charming_blackwell
+fddaea23f104   alpine        "/bin/sh"   37 minutes ago      Exited (137) 2 minutes ago              reverent_sutherland
+fdfaa97024a6     alpine        "/bin/sh"   About an hour ago   Exited (137) 21 minutes ago             crazy_faraday
+075b2ceea6a5   hello-world   "/hello"    2 hours ago         Exited (0) 8 minutes ago                charming_blackwell
 
-ubuntu@docker-host:~$ docker rm 5db5a74490d5
-5db5a74490d5
+ubuntu@docker-host:~$ docker rm fddaea23f104
+fddaea23f104
 
 # After docker rm
 ubuntu@docker-host:~$ docker ps -a
 CONTAINER ID   IMAGE         COMMAND     CREATED             STATUS                        PORTS     NAMES
-6c272c60442b   alpine        "/bin/sh"   About an hour ago   Exited (137) 21 minutes ago             crazy_faraday
-b0a454d2a766   hello-world   "/hello"    2 hours ago         Exited (0) 8 minutes ago                charming_blackwell
+fdfaa97024a6     alpine        "/bin/sh"   About an hour ago   Exited (137) 21 minutes ago             crazy_faraday
+075b2ceea6a5   hello-world   "/hello"    2 hours ago         Exited (0) 8 minutes ago                charming_blackwell
 ```
 
 ### Docker Image Commands
@@ -702,10 +662,10 @@ List images.
 ```
 # This command runs on the host
 ubuntu@docker-host:~$ docker images
-REPOSITORY                 TAG       IMAGE ID       CREATED         SIZE
-alpine                     latest    a606584aa9aa   3 days ago      7.8MB
-docker/welcome-to-docker   latest    c1f619b6477e   7 months ago    18.6MB
-hello-world                latest    d2c94e258dcb   13 months ago   13.3kB
+IMAGE                             ID             DISK USAGE   CONTENT SIZE   EXTRA
+alpine:latest                     25109184c71b       13.1MB         3.95MB    U
+docker/welcome-to-docker:latest   c4d56c24da4f       22.2MB         6.03MB
+hello-world:latest                85404b3c5395       25.9kB         9.52kB    U
 ```
 
 > [!NOTE]  
@@ -720,17 +680,15 @@ Remove one or more images. Removes (and un-tags) one or more images from the hos
 
 ubuntu@docker-host:~$ docker ps -a
 CONTAINER ID   IMAGE         COMMAND     CREATED             STATUS                      PORTS     NAMES
-6c272c60442b   alpine        "/bin/sh"   About an hour ago   Up 7 minutes                          crazy_faraday
-b0a454d2a766   hello-world   "/hello"    2 hours ago         Exited (0) 17 minutes ago             charming_blackwell
+fdfaa97024a6     alpine        "/bin/sh"   About an hour ago   Up 7 minutes                          crazy_faraday
+075b2ceea6a5   hello-world   "/hello"    2 hours ago         Exited (0) 17 minutes ago             charming_blackwell
 
-ubuntu@docker-host:~$ docker rm b0a454d2a766
-b0a454d2a766
+ubuntu@docker-host:~$ docker rm 075b2ceea6a5
+075b2ceea6a5
 
 ubuntu@docker-host:~$ docker rmi hello-world
 Untagged: hello-world:latest
-Untagged: hello-world@sha256:94323f3e5e09a8b9515d74337010375a456c909543e1ff1538f5116d38ab3989
-Deleted: sha256:d2c94e258dcb3c5ac2798d32e1249e42ef01cba4841c2234249495f87264ac5a
-Deleted: sha256:ac28800ec8bb38d5c35b49d45a6ac4777544941199075dff8c4eb63e093aa81e
+Deleted: sha256:85404b3c53951c3ff5d40de0972b1bb21fafa2e8daa235355baf44f33db9dbdd
 ```
 
 This does not remove images from a registry. You cannot remove an image of a running container unless you use the `-f` option. 
@@ -738,7 +696,7 @@ This does not remove images from a registry. You cannot remove an image of a run
 ```
 # This command runs on the host
 ubuntu@docker-host:~$ docker rmi alpine:latest
-Error response from daemon: conflict: unable to remove repository reference "alpine:latest" (must force) - container 6c272c60442b is using its referenced image a606584aa9aa
+Error response from daemon: conflict: unable to delete alpine:latest (must be forced) - container fdfaa97024a6 is using its referenced image 25109184c71b
 ```
 
 > [!NOTE]  
@@ -752,9 +710,9 @@ Remove all dangling images. If `-a` is specified, also remove all images not ref
 # These commands run on the host
 
 ubuntu@docker-host:~$ docker images
-REPOSITORY                 TAG       IMAGE ID       CREATED        SIZE
-alpine                     latest    a606584aa9aa   3 days ago     7.8MB
-docker/welcome-to-docker   latest    c1f619b6477e   7 months ago   18.6MB
+IMAGE                             ID             DISK USAGE   CONTENT SIZE   EXTRA
+alpine:latest                     25109184c71b       13.1MB         3.95MB    U
+docker/welcome-to-docker:latest   c4d56c24da4f       22.2MB         6.03MB
 
 ubuntu@docker-host:~$ docker ps -a
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
@@ -764,22 +722,15 @@ WARNING! This will remove all images without at least one container associated t
 Are you sure you want to continue? [y/N] y
 Deleted Images:
 untagged: alpine:latest
-untagged: alpine@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0
-deleted: sha256:a606584aa9aa875552092ec9e1d62cb98d486f51f389609914039aabd9414687
-deleted: sha256:94e5f06ff8e3d4441dc3cd8b090ff38dc911bfa8ebdb0dc28395bc98f82f983f
+deleted: sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+deleted: sha256:59855d3dceb3ae53991193bd03301e082b2a7faa56a514b03527ae0ec2ce3a95
+deleted: sha256:fe2385f276937dcf780967a5385767fd34b34580c8ed8d303a0cd1485a692635
 untagged: docker/welcome-to-docker:latest
-untagged: docker/welcome-to-docker@sha256:eedaff45e3c78538087bdd9dc7afafac7e110061bbdd836af4104b10f10ab693
-deleted: sha256:c1f619b6477e36a0b6a2531a972e918ef32bbf0217ee9b536409361261db6df0
-deleted: sha256:503c5cd6e10d87f52ccbcbe0fee9b033c6df11dee055c636caa64f65227d02cc
-deleted: sha256:12369c7fe5ffb31bc592a24c0cd081c85f34702da4b747ede00543e6f7f54a74
-deleted: sha256:2b3208f4feef2df0b1c11744e87d2a5c41a1ef41a1217f7d90f1e7c1dab2ee30
-deleted: sha256:97912e57274d7772d7f052fe2d671c5e0ac193863e9d5d02d2575949c17e1cd0
-deleted: sha256:8d49f96bd3dac9f64c8b46bda71c268caa7eafb1d9fde95b93a36133a1e805fc
-deleted: sha256:2765f389f779d9903825e36b704119da1da13faa4e73a44478fd86f577f4b738
-deleted: sha256:baeb76f1ff72a2a650534f62c17308491c058905a82289971c604dea72fe54ed
-deleted: sha256:cc2447e1835a40530975ab80bb1f872fbab0f2a0faecf2ab16fbbb89b3589438
+deleted: sha256:c4d56c24da4f009ecf8352146b43497fe78953edb4c679b841732beb97e588b0
+deleted: sha256:364b67503f6506ec24472c4977d83280247a8abfe6e68b44df07cc643bff540c
+deleted: sha256:a2d9b22ccd2b4bd321b5c77b3e76206f931fb21cea4defdbe3e9c9f413b3a427
 
-Total reclaimed space: 26.35MB
+Total reclaimed space: 9.99MB
 ```
 
 
@@ -1109,42 +1060,13 @@ The final `.` in the command provides the path or URL to the [build context](htt
 When you run a build, the builder pulls the base image, if needed, and then runs the instructions specified in the Dockerfile.
 
 With the previous command, the image will have no name, but the output will provide the ID of the image. As an example, the previous command might produce the following output:
-
-```
-[+] Building 18.9s (9/9) FINISHED                                                                                                           docker:default
- => [internal] load build definition from Dockerfile                                                                                                  0.0s
- => => transferring dockerfile: 138B                                                                                                                  0.0s
- => [internal] load metadata for docker.io/library/node:20-alpine                                                                                     1.1s
- => [internal] load .dockerignore                                                                                                                     0.0s
- => => transferring context: 2B                                                                                                                       0.0s
- => [1/4] FROM docker.io/library/node:20-alpine@sha256:804aa6a6476a7e2a5df8db28804aa6c1c97904eefb01deed5d6af24bb51d0c81                               3.0s
- => => resolve docker.io/library/node:20-alpine@sha256:804aa6a6476a7e2a5df8db28804aa6c1c97904eefb01deed5d6af24bb51d0c81                               0.0s
- => => sha256:804aa6a6476a7e2a5df8db28804aa6c1c97904eefb01deed5d6af24bb51d0c81 7.67kB / 7.67kB                                                        0.0s
- => => sha256:082567d367e7816c7c9ddea38b0258ffbd812e3b6cc2eb84fcab748a13a76f4d 1.72kB / 1.72kB                                                        0.0s
- => => sha256:7d574aa246b25137d960aef810914b4f7441a8a1704b9fa23dce4e559e1e9574 6.36kB / 6.36kB                                                        0.0s
- => => sha256:ec99f8b99825a742d50fb3ce173d291378a46ab54b8ef7dd75e5654e2a296e99 3.62MB / 3.62MB                                                        0.3s
- => => sha256:826542d541ab88dafafd1e8c6ccccf1e870336f6d48d1feff10c4720d0bebe58 42.18MB / 42.18MB                                                      1.1s
- => => sha256:dffcc26d5732092ab309ca3f1a2d775be8eff526ef6154005da170f2d7f81108 1.39MB / 1.39MB                                                        0.4s
- => => extracting sha256:ec99f8b99825a742d50fb3ce173d291378a46ab54b8ef7dd75e5654e2a296e99                                                             0.1s
- => => sha256:db472a6f05b5e1bbd31ff3a00655998a08dfa5530073d19969a4be0690e70cc2 452B / 452B                                                            0.4s
- => => extracting sha256:826542d541ab88dafafd1e8c6ccccf1e870336f6d48d1feff10c4720d0bebe58                                                             1.7s
- => => extracting sha256:dffcc26d5732092ab309ca3f1a2d775be8eff526ef6154005da170f2d7f81108                                                             0.1s
- => => extracting sha256:db472a6f05b5e1bbd31ff3a00655998a08dfa5530073d19969a4be0690e70cc2                                                             0.0s
- => [internal] load build context                                                                                                                     0.1s
- => => transferring context: 4.59MB                                                                                                                   0.1s
- => [2/4] WORKDIR /app                                                                                                                                0.2s
- => [3/4] COPY . .                                                                                                                                    0.0s
- => [4/4] RUN yarn install --production                                                                                                              12.8s
- => exporting to image                                                                                                                                1.6s
- => => exporting layers                                                                                                                               1.6s
- => => writing image sha256:2f2eb372d6e733cf03de24b8983713dee0cdf28d01108c152572b42665d72ebf                                                          0.0s
-```
+![docker-build-process](./container-basics.assets/docker-build-process.webp)
 
 With the previous output, you could start a container by using the referenced image:
 
 ```console
 # This command runs on the host
-ubuntu@docker-host:~/app$ docker run sha256:2f2eb372d6e733cf03de24b8983713dee0cdf28d01108c152572b42665d72ebf
+ubuntu@docker-host:~/app$ docker run sha256:cbe097d55c1ef75df472a5ad2aa9d0186fa8226849bda235e0f506f58cfe818c
 ```
 
 The `docker run` command produces the following output:
@@ -1473,16 +1395,16 @@ ubuntu@docker-host:~$ docker run -v ~/nginx-html/index.html:/usr/share/nginx/htm
 /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
 /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
 /docker-entrypoint.sh: Configuration complete; ready for start up
-2024/06/24 17:30:17 [notice] 1#1: using the "epoll" event method
-2024/06/24 17:30:17 [notice] 1#1: nginx/1.27.0
-2024/06/24 17:30:17 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14)
-2024/06/24 17:30:17 [notice] 1#1: OS: Linux 6.8.0-35-generic
-2024/06/24 17:30:17 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
-2024/06/24 17:30:17 [notice] 1#1: start worker processes
-2024/06/24 17:30:17 [notice] 1#1: start worker process 29
-2024/06/24 17:30:17 [notice] 1#1: start worker process 30
-2024/06/24 17:30:17 [notice] 1#1: start worker process 31
-2024/06/24 17:30:17 [notice] 1#1: start worker process 32
+2026/03/17 00:48:32 [notice] 1#1: using the "epoll" event method
+2026/03/17 00:48:32 [notice] 1#1: nginx/1.29.6
+2026/03/17 00:48:32 [notice] 1#1: built by gcc 14.2.0 (Debian 14.2.0-19)
+2026/03/17 00:48:32 [notice] 1#1: OS: Linux 6.8.0-106-generic
+2026/03/17 00:48:32 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1024:524288
+2026/03/17 00:48:32 [notice] 1#1: start worker processes
+2026/03/17 00:48:32 [notice] 1#1: start worker process 29
+2026/03/17 00:48:32 [notice] 1#1: start worker process 30
+2026/03/17 00:48:32 [notice] 1#1: start worker process 31
+2026/03/17 00:48:32 [notice] 1#1: start worker process 32
 ```
 
 Don't exit the running nginx container. Verify the bind mount in a different SSH session on the host.
