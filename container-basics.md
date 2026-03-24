@@ -807,12 +807,12 @@ IMAGE          CREATED         CREATED BY                                      S
 
 The top line `01339e77b0ed   2 minutes ago   /bin/bash   2B ` indicates the new file has been added to the image.
 
-Run `docker image inspect` to display detailed information on one or more images.
+Run `docker inspect` to display detailed information on one or more images.
 
 ```
 # These commands run on the host
 
-ubuntu@docker-host:~$ docker image inspect --format='{{json .RootFS}}' ubuntu-a | jq
+ubuntu@docker-host:~$ docker inspect --format='{{json .RootFS}}' ubuntu-a | jq
 {
   "Type": "layers",
   "Layers": [
@@ -821,7 +821,7 @@ ubuntu@docker-host:~$ docker image inspect --format='{{json .RootFS}}' ubuntu-a 
   ]
 }
 
-ubuntu@docker-host:~$ docker image inspect --format='{{json .RootFS}}' ubuntu | jq
+ubuntu@docker-host:~$ docker inspect --format='{{json .RootFS}}' ubuntu | jq
 {
   "Type": "layers",
   "Layers": [
@@ -841,7 +841,7 @@ To prove your new image has the `/a.txt` file, you can start a new container usi
 
 ```
 # This command runs on the host
-docker run ubuntu-a cat /a.txt
+docker run --name=ubuntu-a ubuntu-a cat /a.txt
 a
 ```
 > [!NOTE]  
@@ -849,73 +849,72 @@ a
 
 ### Modify `UppderDir`
 
-Run `docker image inspect` to display the `upper` directory that contains the contents of the container's read-write layer:
+Find the "Id" of a running `ubuntu-a` container:
 
 ```
 # This command runs on the host
-ubuntu@docker-host:~$ docker image inspect --format='{{json .GraphDriver}}' ubuntu-a | jq
-{
-  "Data": {
-    "LowerDir": "/var/lib/docker/overlay2/de66dfd62099295d42d6068fc48ad6eb88984b90a30da22d17574fb030885f39/diff",
-    "MergedDir": "/var/lib/docker/overlay2/022cf4819e93069dced25d93a620e7e78ae8188134782f1b2c13fa16fdecfaef/merged",
-    "UpperDir": "/var/lib/docker/overlay2/022cf4819e93069dced25d93a620e7e78ae8188134782f1b2c13fa16fdecfaef/diff",
-    "WorkDir": "/var/lib/docker/overlay2/022cf4819e93069dced25d93a620e7e78ae8188134782f1b2c13fa16fdecfaef/work"
-  },
-  "Name": "overlay2"
-}
+
+docker kill ubuntu-a
+docker rm ubuntu-a
+docker run --name=ubuntu-a -it ubuntu-a /bin/bash
+```
+
+```
+# This command runs on the host. Leave the ubuntu-a container running, start a new shell session.
+docker inspect ubuntu-a | jq -r '.[0].Id'
+cbdf1ba64eadfe6463a925cf9fd1b4fb595ac17fe95557f27ef07d30ee06929c
+```
+
+The `/var/lib/docker/rootfs/overlayfs/<CONTAINER_ID>/` directory contains the contents of the container's read-write layer:
+
+```
+# This command runs on the host. Leave the ubuntu-a container running, start a new shell session.
+ubuntu@docker-host:~$ sudo ls -l /var/lib/docker/rootfs/overlayfs/cbdf1ba64eadfe6463a925cf9fd1b4fb595ac17fe95557f27ef07d30ee06929c
+total 64
+-rw-r--r--  1 root root    2 Mar 24 08:26 a.txt
+lrwxrwxrwx  1 root root    7 Apr 22  2024 bin -> usr/bin
+drwxr-xr-x  2 root root 4096 Apr 22  2024 boot
+drwxr-xr-x  1 root root 4096 Mar 24 10:13 dev
+drwxr-xr-x  1 root root 4096 Mar 24 10:13 etc
+drwxr-xr-x  3 root root 4096 Feb 16 19:09 home
+lrwxrwxrwx  1 root root    7 Apr 22  2024 lib -> usr/lib
+lrwxrwxrwx  1 root root    9 Apr 22  2024 lib64 -> usr/lib64
+drwxr-xr-x  2 root root 4096 Feb 16 19:02 media
+drwxr-xr-x  2 root root 4096 Feb 16 19:02 mnt
+drwxr-xr-x  2 root root 4096 Feb 16 19:02 opt
+drwxr-xr-x  2 root root 4096 Apr 22  2024 proc
+drwx------  2 root root 4096 Feb 16 19:09 root
+drwxr-xr-x  4 root root 4096 Feb 16 19:09 run
+lrwxrwxrwx  1 root root    8 Apr 22  2024 sbin -> usr/sbin
+drwxr-xr-x  2 root root 4096 Feb 16 19:02 srv
+drwxr-xr-x  2 root root 4096 Apr 22  2024 sys
+drwxrwxrwt  2 root root 4096 Feb 16 19:09 tmp
+drwxr-xr-x 12 root root 4096 Feb 16 19:02 usr
+drwxr-xr-x 11 root root 4096 Feb 16 19:09 var
 ```
 
 Modify the `a.txt` file on the host:
 
 ```
-# These commands run on the host
+# This command runs on the host. Leave the ubuntu-a container running, start a new shell session.
 
-ubuntu@docker-host:~$ sudo cat /var/lib/docker/overlay2/022cf4819e93069dced25d93a620e7e78ae8188134782f1b2c13fa16fdecfaef/diff/a.txt
+ubuntu@docker-host:~$ sudo cat /var/lib/docker/rootfs/overlayfs/cbdf1ba64eadfe6463a925cf9fd1b4fb595ac17fe95557f27ef07d30ee06929c/a.txt
 a
 
 # Add a new line 'b' to a.txt file
-ubuntu@docker-host:~$ echo 'b' | sudo tee -a /var/lib/docker/overlay2/022cf4819e93069dced25d93a620e7e78ae8188134782f1b2c13fa16fdecfaef/diff/a.txt
+ubuntu@docker-host:~$ echo 'b' | sudo tee -a /var/lib/docker/rootfs/overlayfs/cbdf1ba64eadfe6463a925cf9fd1b4fb595ac17fe95557f27ef07d30ee06929c/a.txt
 ```
 
-Start a new container from image `ubuntu-a` and display the content of `/a.txt` file:
+Go back to the container `ubuntu-a` shell and display the content of `/a.txt` file:
 
 ```
-# This command runs on the host
-ubuntu@docker-host:~$ docker run ubuntu-a cat /a.txt
+# This command runs in the ubuntu-a container
+cat /a.txt
 a
 b
 ```
 
-Start a new container from image `ubuntu-a`  and open the shell.
-
-```
-# This command runs on the host
-ubuntu@docker-host:~$ docker run -it ubuntu-a
-root@aa06e9ee4348:/#
-```
-
-Modify the `/a.txt` file inside the container.
-
-```
-# These commands run inside the container
-root@aa06e9ee4348:/# cat /a.txt
-a
-b
-root@aa06e9ee4348:/# echo 'c' >> /a.txt
-root@aa06e9ee4348:/# cat /a.txt
-a
-b
-c
-```
-
-Don't exit the container. Verify the content of `a.txt` on the host.
-
-```
-# This command runs on the host
-ubuntu@docker-host:~$ sudo cat /var/lib/docker/overlay2/022cf4819e93069dced25d93a620e7e78ae8188134782f1b2c13fa16fdecfaef/diff/a.txt
-a
-b
-```
+If you make changes to `/a.txt` in the running `ubuntu-a` container, you will see the changes in `/var/lib/docker/rootfs/overlayfs/<CONTAINER_ID>/` on the host as well.
 
 ### OverlayFS
 
