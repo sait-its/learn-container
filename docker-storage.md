@@ -55,21 +55,38 @@ docker run --name demo-container -it alpine
 echo 'hello docker' > /file1.txt
 ```
 
-Inspect the `GraphDrive` on the host:
+Find the container id on the host:
 
 ```shell
 # This command runs on the host
-sudo docker inspect demo-container | jq ".[0].GraphDriver.Data"
+docker inspect demo-container | jq -r '.[0].Id'
+
+81f4328bf51dd5d4fc138ed6f7d59ded7b8ea2242ebcffbee3a8156dd6d755c0
 ```
 
-It shows the OverlayFS info similar to this:
+The /var/lib/docker/rootfs/overlayfs/<CONTAINER_ID>/ directory contains the contents of the container's read-write layer:
 ```
-{
-  "LowerDir": "/var/lib/docker/overlay2/273a0b6d8bed4e54075ecd6a8900fa0c6e0e540192f4c2fdae543396a3d414fc-init/diff:/var/lib/docker/overlay2/57fa1fcc173785f74e12fd4e7d81254e052055f164d595ae3a24d7dc4af69a00/diff",
-  "MergedDir": "/var/lib/docker/overlay2/273a0b6d8bed4e54075ecd6a8900fa0c6e0e540192f4c2fdae543396a3d414fc/merged",
-  "UpperDir": "/var/lib/docker/overlay2/273a0b6d8bed4e54075ecd6a8900fa0c6e0e540192f4c2fdae543396a3d414fc/diff",
-  "WorkDir": "/var/lib/docker/overlay2/273a0b6d8bed4e54075ecd6a8900fa0c6e0e540192f4c2fdae543396a3d414fc/work"
-}
+# This command runs on the host. Leave the demo-container running, start a new shell session.
+ubuntu@docker-host:~$ sudo ls -l /var/lib/docker/rootfs/overlayfs/81f4328bf51dd5d4fc138ed6f7d59ded7b8ea2242ebcffbee3a8156dd6d755c0
+total 72
+drwxr-xr-x  2 root root 4096 Jan 27 14:19 bin
+drwxr-xr-x  1 root root 4096 Mar 31 10:03 dev
+drwxr-xr-x  1 root root 4096 Mar 31 10:03 etc
+-rw-r--r--  1 root root   13 Mar 31 10:03 file1.txt
+drwxr-xr-x  2 root root 4096 Jan 27 14:19 home
+drwxr-xr-x  6 root root 4096 Jan 27 14:19 lib
+drwxr-xr-x  5 root root 4096 Jan 27 14:19 media
+drwxr-xr-x  2 root root 4096 Jan 27 14:19 mnt
+drwxr-xr-x  2 root root 4096 Jan 27 14:19 opt
+drwxr-xr-x  2 root root 4096 Jan 27 14:19 proc
+drwx------  1 root root 4096 Mar 31 10:03 root
+drwxr-xr-x  3 root root 4096 Jan 27 14:19 run
+drwxr-xr-x  2 root root 4096 Jan 27 14:19 sbin
+drwxr-xr-x  2 root root 4096 Jan 27 14:19 srv
+drwxr-xr-x  2 root root 4096 Jan 27 14:19 sys
+drwxrwxrwt  2 root root 4096 Jan 27 14:19 tmp
+drwxr-xr-x  7 root root 4096 Jan 27 14:19 usr
+drwxr-xr-x 11 root root 4096 Jan 27 14:19 var
 ```
 
 `UpperDir` is the read-write layer where changes are written. The `/file1.txt` file created inside the container can be located at `UpperDir`. ![inspect-upperdir](./docker-storage.assets/inspect-upperdir.webp) 
