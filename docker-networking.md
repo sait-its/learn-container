@@ -26,9 +26,9 @@ Excerpt from [Networking overview | Docker Docs](https://docs.docker.com/network
 
 ### Default Bridge Network
 
-> This tutorial demonstrates how to use the default `bridge` network that Docker sets up for you automatically. This network is not the best choice for production systems.
-
-Run the demos on [Networking with standalone containers | Docker Docs](https://docs.docker.com/network/network-tutorial-standalone/#use-the-default-bridge-network)
+>When Docker Engine on Linux starts for the first time, it has a single built-in network called the "default bridge" network. When you run a container without the --network option, it is connected to the default bridge.
+>
+>Containers attached to the default bridge have access to network services outside the Docker host. They use "masquerading" which means, if the Docker host has Internet access, no additional configuration is needed for the container to have Internet access.
 
 
 
@@ -38,9 +38,11 @@ Run the demos on [Networking with standalone containers | Docker Docs](https://d
 
 ### User-defined Bridge Networks
 
->This tutorial shows how to create and use your own custom bridge networks, to connect containers running on the same Docker host. This is recommended for standalone containers running in production.
+>It can be useful to separate groups of containers that should have full access to each other, but restricted access to containers in other groups.
+>
+>You can create custom, user-defined networks, and connect groups of containers to the same network. Once connected to a user-defined network, containers can communicate with each other using container IP addresses or container names.
 
-Run the demos on [Use user-defined bridge networks | Docker Docs](https://docs.docker.com/network/network-tutorial-standalone/#use-user-defined-bridge-networks)
+Run the examples on [User-defined bridge networks | Docker Docs](https://docs.docker.com/engine/network/#user-defined-networks)
 
 ![user-defined-bridge](./docker-networking.assets/user-defined-bridge.webp) 
 
@@ -56,7 +58,7 @@ Topology of user-defined bridge networks demo.
 
 ### Host Network
 
->This tutorial deals with networking standalone containers which bind directly to the Docker host's network, with no network isolation.
+>If you use the host network mode for a container, that container's network stack isn't isolated from the Docker host (the container shares the host's networking namespace), and the container doesn't get its own IP-address allocated. For instance, if you run a container which binds to port 80 and you use host networking, the container's application is available on port 80 on the host's IP address.
 
-Run the demos on [Networking using the host network | Docker Docs](https://docs.docker.com/network/network-tutorial-host/)
+Run the examples on [Host network driver | Docker Docs](https://docs.docker.com/engine/network/drivers/host/)
 
