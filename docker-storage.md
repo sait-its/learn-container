@@ -11,6 +11,7 @@
       * [Volumes](#volumes)
       * [tmpfs mounts](#tmpfs-mounts)
       * [Storage drivers](#storage-drivers)
+      * [containerd image store](#containerd-image-store)
    * [Contributing](#contributing)
    * [License](#license)
 
@@ -89,22 +90,9 @@ drwxr-xr-x  7 root root 4096 Jan 27 14:19 usr
 drwxr-xr-x 11 root root 4096 Jan 27 14:19 var
 ```
 
-`UpperDir` is the read-write layer where changes are written. The `/file1.txt` file created inside the container can be located at `UpperDir`. ![inspect-upperdir](./docker-storage.assets/inspect-upperdir.webp) 
+`UpperDir` is the read-write layer where changes are written. The `/file1.txt` file created inside the container can be located at `UpperDir`. If you modify files in `UpperDir` on the host, the running container will immediately detect these changes.
 
-If you modify files in `UpperDir` on the host, the running container will immediately detect these changes.
-
-![modify-upperdir-on-host](./docker-storage.assets/modify-upperdir-on-host.png) 
-
-When a container is removed, the files in the read-write layer is removed with the container.
-
-```
-# These commands run on the host
-docker rm demo-container
-
-sudo ls /var/lib/docker/overlay2/
-```
-
-The `LowerDir`, `MergedDir`, `UpperDir`, and `WorkDir` directories cease to exist on the host.
+When a container is removed, the files in the read-write layer is removed with the container. The `LowerDir`, `MergedDir`, `UpperDir`, and `WorkDir` directories cease to exist on the host.
 
 
 
@@ -288,3 +276,16 @@ Excerpt from https://docs.docker.com/storage/storagedriver/select-storage-driver
 
 > When in doubt, the best all-around configuration is to **use a modern Linux distribution with a kernel that supports the `overlay2` storage driver**, and to **use Docker volumes** for write-heavy workloads instead of relying on writing data to the container's writable layer.
 
+
+
+---
+
+
+
+### containerd image store
+
+>The containerd image store is the default storage backend for Docker Engine 29.0 and later on fresh installations. If you upgraded from an earlier version, your daemon continues using the legacy graph drivers (overlay2) until you enable the containerd image store.
+>
+>containerd, the industry-standard container runtime, uses snapshotters instead of classic storage drivers for storing image and container data.
+
+Read [containerd image store with Docker Engine](https://docs.docker.com/engine/storage/containerd/)
